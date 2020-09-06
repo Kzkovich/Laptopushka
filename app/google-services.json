@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "954214828543",
+    "firebase_url": "https://laptopushka.firebaseio.com",
+    "project_id": "laptopushka",
+    "storage_bucket": "laptopushka.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954214828543:android:637786cb9218b404b7ffca",
+        "android_client_info": {
+          "package_name": "ru.kzkovich.laptopushka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "954214828543-sc6qf5lkk9u7qo2vbev6lh3uquhovel9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSKH-Vy7np_1bPfGNLxN3-FJyiYy2iLHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "954214828543-sc6qf5lkk9u7qo2vbev6lh3uquhovel9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
