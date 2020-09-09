@@ -7,6 +7,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -17,9 +18,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,28 +76,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void listAllVideosFromStorage() {
+        final String localFileStorage = MainActivity.this.getApplicationInfo().dataDir;
+        final File[] localFileList = new File(localFileStorage).listFiles();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         final StorageReference videosRef = storage.getReference().child("videos");
+        videosRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+            @Override
+            public void onSuccess(ListResult listResult) {
+                for (StorageReference fileStorage : listResult.getItems()) {
+
+                }
+            }
+        });
         videosRef.listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override
                     public void onSuccess(ListResult listResult) {
                         Toast.makeText(MainActivity.this, "Загружаю файлов " + listResult.getItems().size(), Toast.LENGTH_SHORT).show();
-                        for (final StorageReference items : listResult.getItems()) {
-                            final File localFile = new File(MainActivity.this.getApplicationInfo().dataDir + "/" + items.getName());
-                            items.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                    Toast.makeText(MainActivity.this, "Файл загружен " + items.getName(), Toast.LENGTH_SHORT).show();
+                        for (final StorageReference referenceToDownload : listResult.getItems()) {
+
+                            if (localFileList == null) {
+                                downloadFile(localFileStorage, referenceToDownload);
+                            } else {
+                                for (File localFile : localFileList) {
+                                    if (referenceToDownload.getName().equals(localFile.getName())) {
+                                        //TODO здесь какая-то хуйня, должны скипать такие файлы, придумать
+                                    }
                                 }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(MainActivity.this, "Упс! При загрузке возникла ошибка " + e, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            localVideoFiles.add(localFile.getAbsolutePath());
+                                downloadFile(localFileStorage, referenceToDownload);
+                            }
+
+
+
+
                         }
+                    }
+
+                    private void downloadFile(String localFileStorage, final StorageReference referenceToDownload) {
+                        final File whereToDownload = new File(localFileStorage + File.separatorChar + referenceToDownload.getName());
+                        referenceToDownload.getFile(whereToDownload).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                Toast.makeText(MainActivity.this, "Файл " + referenceToDownload.getName() + " загружен", Toast.LENGTH_SHORT).show();
+                                localVideoFiles.add(whereToDownload.getAbsolutePath());
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(MainActivity.this, "Упс! При загрузке возникла ошибка " + e, Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(@NonNull FileDownloadTask.TaskSnapshot snapshot) {
+                                Log.d("FileDownload", "Загружено - " + referenceToDownload.getName() + " - " + snapshot.getBytesTransferred() + " байт");
+                            }
+                        });
+                    }
+
+                    private void checkBeforeDownload(StorageReference items) {
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -110,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void playVideo(View view) {
         playButton.setVisibility(View.GONE);
-        Uri video = Uri.parse(localVideoFiles.get(0));
+        Uri video = new Uri(localVideoFiles.get(0));
         videoView.setVideoURI(video);
         videoView.start();
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
