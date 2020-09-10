@@ -99,21 +99,17 @@ public class MainActivity extends AppCompatActivity {
                                 downloadFile(localFileStorage, referenceToDownload);
                             } else {
                                 for (File localFile : localFileList) {
-                                    if (referenceToDownload.getName().equals(localFile.getName())) {
-                                        //TODO здесь какая-то хуйня, должны скипать такие файлы, придумать
+
+                                    if (!referenceToDownload.getName().equals(localFile.getName())) {
+                                        downloadFile(localFileStorage, referenceToDownload);
                                     }
                                 }
-                                downloadFile(localFileStorage, referenceToDownload);
                             }
-
-
-
-
                         }
                     }
 
                     private void downloadFile(String localFileStorage, final StorageReference referenceToDownload) {
-                        final File whereToDownload = new File(localFileStorage + File.separatorChar + referenceToDownload.getName());
+                        final File whereToDownload = new File(localFileStorage + "/" + referenceToDownload.getName());
                         referenceToDownload.getFile(whereToDownload).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
@@ -149,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void playVideo(View view) {
         playButton.setVisibility(View.GONE);
-        Uri video = new Uri(localVideoFiles.get(0));
+        Uri video = Uri.parse(localVideoFiles.get(0));
         videoView.setVideoURI(video);
         videoView.start();
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
