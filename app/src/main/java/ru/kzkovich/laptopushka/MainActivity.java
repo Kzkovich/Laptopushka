@@ -7,6 +7,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -72,75 +73,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void downloadAndRunVideo(View view) {
-        listAllVideosFromStorage();
-    }
-
-    private void listAllVideosFromStorage() {
-        final String localFileStorage = MainActivity.this.getApplicationInfo().dataDir;
-        final File[] localFileList = new File(localFileStorage).listFiles();
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        final StorageReference videosRef = storage.getReference().child("videos");
-        videosRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-            @Override
-            public void onSuccess(ListResult listResult) {
-                for (StorageReference fileStorage : listResult.getItems()) {
-
-                }
-            }
-        });
-        videosRef.listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        Toast.makeText(MainActivity.this, "Загружаю файлов " + listResult.getItems().size(), Toast.LENGTH_SHORT).show();
-                        for (final StorageReference referenceToDownload : listResult.getItems()) {
-
-                            if (localFileList == null) {
-                                downloadFile(localFileStorage, referenceToDownload);
-                            } else {
-                                for (File localFile : localFileList) {
-
-                                    if (!referenceToDownload.getName().equals(localFile.getName())) {
-                                        downloadFile(localFileStorage, referenceToDownload);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    private void downloadFile(String localFileStorage, final StorageReference referenceToDownload) {
-                        final File whereToDownload = new File(localFileStorage + "/" + referenceToDownload.getName());
-                        referenceToDownload.getFile(whereToDownload).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(MainActivity.this, "Файл " + referenceToDownload.getName() + " загружен", Toast.LENGTH_SHORT).show();
-                                localVideoFiles.add(whereToDownload.getAbsolutePath());
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(MainActivity.this, "Упс! При загрузке возникла ошибка " + e, Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onProgress(@NonNull FileDownloadTask.TaskSnapshot snapshot) {
-                                Log.d("FileDownload", "Загружено - " + referenceToDownload.getName() + " - " + snapshot.getBytesTransferred() + " байт");
-                            }
-                        });
-                    }
-
-                    private void checkBeforeDownload(StorageReference items) {
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "Упс! При получении файлов из хранилища возникла ошибка " + e, Toast.LENGTH_LONG).show();
-                    }
-                });
-        downloadButton.setVisibility(View.GONE);
-        playButton.setVisibility(View.VISIBLE);
-        Toast.makeText(MainActivity.this, "Все файлы загружены, жмякай \"Запуск плеера\" ", Toast.LENGTH_SHORT).show();
     }
 
     public void playVideo(View view) {
@@ -163,4 +95,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }
