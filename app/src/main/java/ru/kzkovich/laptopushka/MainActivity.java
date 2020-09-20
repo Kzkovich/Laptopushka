@@ -3,8 +3,14 @@ package ru.kzkovich.laptopushka;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DownloadManager;
+import android.app.DownloadManager.Request;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,13 +35,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.app.DownloadManager.*;
+
 public class MainActivity extends AppCompatActivity {
 
     private List<String> localVideoFiles = new ArrayList<>();
+    private long enque;
     VideoView videoView;
     Button downloadButton;
     Button playButton;
     private static int currentVideo = 0;
+    DownloadManager dm;
+    String URL_TO_DOWNLOAD_PRICE = "http://1619149.po369583.web.hosting-test.net/price/Gazik_laptops_web.xlsx";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +55,31 @@ public class MainActivity extends AppCompatActivity {
         videoView = findViewById(R.id.videoView);
         downloadButton = findViewById(R.id.downloadFile);
         playButton = findViewById(R.id.playVideo);
+        registerReceiver(receiver, new IntentFilter(ACTION_DOWNLOAD_COMPLETE));
         localVideoFiles.clear();
     }
+
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                long downloadId = intent.getLongExtra(EXTRA_DOWNLOAD_ID, 0);
+                Query query = new Query();
+                query.setFilterById(enque);
+                Cursor c = dm.query(query);
+
+                if (c.moveToFirst()) {
+                    int columnIndex = c.getColumnIndex(COLUMN_STATUS);
+
+                    if (STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+                        Toast.makeText(MainActivity.this, "Загрузка завершена", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }
+    };
 
     public void onWindowFocusChanged(boolean hasFocus) {
         super .onWindowFocusChanged(hasFocus);
@@ -74,8 +108,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void downloadPrice(View view) {
-        File localFile = new File(Environment.getDataDirectory().getAbsoluteFile() + Resources.getSystem().getString(R.string.local_file_name))
-        new DownloadTask();
+        File localFile = new File(Environment.getDataDirectory().getAbsoluteFile() + Resources.getSystem().getString(R.string.local_file_name));
+        dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        Request request = new Request(Uri.parse(URL_TO_DOWNLOAD_PRICE)).setDestinationUri(Uri.fromFile(localFile));
+        enque = dm.enqueue(request);
+
     }
 
     public void playVideo(View view) {
