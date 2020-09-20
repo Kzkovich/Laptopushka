@@ -30,25 +30,14 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/checkLocalVideo"
+                android:id="@+id/downloadFile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="checkAppSpecificVideoDir"
-                android:layout_gravity="center_horizontal"
-                android:padding="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@color/colorAccent"
-                android:text="Check video localy"/>
-
-            <Button
-                android:id="@+id/loadVideo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="downloadAndRunVideo"
+                android:onClick="downloadPrice"
                 android:layout_gravity="center_horizontal"
                 android:padding="10dp"
                 android:background="@color/colorAccent"
-                android:text="Download video"/>
+                android:text="@string/download_price_list"/>
 
             <Button
                 android:id="@+id/playVideo"
