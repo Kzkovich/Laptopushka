@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
         videoView = findViewById(R.id.videoView);
-        downloadButton = findViewById(R.id.downloadFile);
+        downloadButton = findViewById(R.id.loadVideo);
         playButton = findViewById(R.id.playVideo);
         localVideoFiles.clear();
     }
@@ -73,9 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
-    public void downloadPrice(View view) {
-        File localFile = new File(Environment.getDataDirectory().getAbsoluteFile() + Resources.getSystem().getString(R.string.local_file_name))
-        new DownloadTask();
+    public void downloadAndRunVideo(View view) {
     }
 
     public void playVideo(View view) {
