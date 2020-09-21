@@ -1,33 +1,33 @@
 package ru.kzkovich.laptopushka;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.app.DownloadManager.*;
+import static android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE;
+import static android.app.DownloadManager.EXTRA_DOWNLOAD_ID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,7 +35,10 @@ public class MainActivity extends AppCompatActivity {
     VideoView videoView;
     Button downloadButton;
     Button playButton;
+    DownloadManager dm;
+    String URL_TO_DOWNLOAD_PRICE = "http://1619149.po369583.web.hosting-test.net/price/Gazik_laptops_web.xlsx";
     private static int currentVideo = 0;
+    private long enque;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,29 @@ public class MainActivity extends AppCompatActivity {
         playButton = findViewById(R.id.playVideo);
         localVideoFiles.clear();
     }
+
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                long downloadId = intent.getLongExtra(EXTRA_DOWNLOAD_ID, 0);
+                Query query = new Query();
+                query.setFilterById(enque);
+                Cursor c = dm.query(query);
+
+                if (c.moveToFirst()) {
+                    int columnIndex = c.getColumnIndex(COLUMN_STATUS);
+
+                    if (STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+                        Toast.makeText(MainActivity.this, "Загрузка завершена", Toast.LENGTH_SHORT).show();
+                        unregisterReceiver(receiver);
+                    }
+                }
+            }
+        }
+    };
 
     public void onWindowFocusChanged(boolean hasFocus) {
         super .onWindowFocusChanged(hasFocus);
@@ -74,8 +100,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void downloadPrice(View view) {
-        File localFile = new File(Environment.getDataDirectory().getAbsoluteFile() + Resources.getSystem().getString(R.string.local_file_name))
-        new DownloadTask();
+        registerReceiver(receiver, new IntentFilter(ACTION_DOWNLOAD_COMPLETE));
+        File localFile = new File(view.getContext().getDataDir().getAbsolutePath() + "/prices.xlsx");
+        dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        Request request = new Request(Uri.parse(URL_TO_DOWNLOAD_PRICE)).setDestinationUri(Uri.fromFile(localFile));
+        enque = dm.enqueue(request);
+        //
+    }
+
+    public static String getDataDir(Context context) throws Exception {
+        return context.getPackageManager()
+                .getPackageInfo(context.getPackageName(), 0)
+                .applicationInfo.dataDir;
     }
 
     public void playVideo(View view) {
