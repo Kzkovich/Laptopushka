@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         Request request = new Request(Uri.parse(URL_TO_DOWNLOAD_PRICE)).setDestinationUri(Uri.fromFile(localFile));
         enque = dm.enqueue(request);
+        //
     }
 
     public static String getDataDir(Context context) throws Exception {
