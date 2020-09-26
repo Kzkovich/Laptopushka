@@ -1,12 +1,17 @@
 package ru.kzkovich.laptopushka;
 
+import android.util.Log;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static android.content.res.Resources.getSystem;
@@ -20,26 +25,33 @@ public class PriceListParcer {
     private XSSFWorkbook workBook;
     private XSSFSheet sheet;
     private Row row;
+    private String sheetName = "Tablet";
 
-    public PriceListParcer(String articleNumber, String localPathToPriceList, XSSFWorkbook workBook, XSSFSheet sheet, XSSFRow row) {
-        this.articleNumber = articleNumber;
-        this.localPathToPriceList = localPathToPriceList;
-        this.workBook = workBook;
-        this.sheet = sheet;
-        this.row = row;
+    public PriceListParcer() {
+        this.articleNumber = null;
+        this.localPathToPriceList = null;
+        this.workBook = null;
+        this.sheet = null;
+        this.row = null;
     }
 
     public PriceListParcer(String articleNumber, String localPathToPriceList) {
         this.articleNumber = articleNumber;
         this.localPathToPriceList = localPathToPriceList;
-
-        this.workBook = null;
+        FileInputStream price = null;
         try {
-            this.workBook = new XSSFWorkbook(new FileInputStream(localPathToPriceList));
+            price = new FileInputStream(new File(localPathToPriceList));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        workBook = null;
+        try {
+            workBook = new XSSFWorkbook(price);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.sheet = workBook.getSheet(getSystem().getString(R.string.app_name));
+        this.sheet = workBook.getSheet(sheetName);
         this.row = sheet.getRow(getLaptopRowNum(articleNumber));
     }
 
@@ -51,6 +63,7 @@ public class PriceListParcer {
 
             if (articleStringCellValue.equals(articleNumber)) {
                 rowNum = row.getRowNum();
+                Log.d("article", articleStringCellValue);
             }
         }
 
