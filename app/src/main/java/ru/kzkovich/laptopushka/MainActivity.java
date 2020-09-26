@@ -47,9 +47,10 @@ public class MainActivity extends AppCompatActivity {
     Button playButton;
     DownloadManager dm;
     String URL_TO_DOWNLOAD_PRICE = "http://1619149.po369583.web.hosting-test.net/price/Gazik_laptops_web.xlsx";
+    File localFile;
     private static int currentVideo = 0;
-    private long enque;
     ProgressBar mProgressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +59,12 @@ public class MainActivity extends AppCompatActivity {
         videoView = findViewById(R.id.videoView);
         downloadButton = findViewById(R.id.downloadFile);
         playButton = findViewById(R.id.playVideo);
-        mProgressBar = new ProgressBar(MainActivity.this);
-        mProgressBar.setId(R.id.progressBar);
-        mProgressBar.setIndeterminate(true);
+        mProgressBar = findViewById(R.id.progressBar);
+        mProgressBar.setIndeterminate(false);
         localVideoFiles.clear();
+
+        localFile = new File(getDataDir().getAbsolutePath() + "/prices.xlsx");
+        localFile.mkdir();
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -91,16 +94,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void downloadPrice(View view) {
-        File localFile = new File(Environment.getDataDirectory() + "/prices.xlsx");
-        localFile.mkdir();
-        final DownloadTask downloadTask = new DownloadTask(MainActivity.this, view);
-        downloadTask.execute(URL_TO_DOWNLOAD_PRICE);
-        mProgressBar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                downloadTask.cancel(true);
-            }
-        });
+
+        final DownloadTask downloadTask = new DownloadTask(MainActivity.this, mProgressBar);
+        downloadTask.execute(URL_TO_DOWNLOAD_PRICE, localFile.getAbsolutePath());
     }
 
 
@@ -132,4 +128,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void populateCharacteristics(View view) {
+        final PriceListParcer priceListParcer = new PriceListParcer("N1019410", localFile.getAbsolutePath());
+    }
 }
