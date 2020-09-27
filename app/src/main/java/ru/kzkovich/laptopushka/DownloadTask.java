@@ -8,25 +8,20 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 
 public class DownloadTask extends AsyncTask<String, Integer, String> {
 //    private Context context;
     private PowerManager.WakeLock mWhakeLock;
     private WeakReference<ProgressBar> mProgressBar;
     private WeakReference<Context> context;
+    private String localUrl;
 
     DownloadTask (Context context, ProgressBar progressBar) {
         this.context = new WeakReference<>(context);
@@ -58,7 +53,8 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
             input = connection.getInputStream();
 
             //saving
-            output = new FileOutputStream(sUrl[1]);
+            localUrl = sUrl[1];
+            output = new FileOutputStream(localUrl);
 
             byte[] data = new byte[4096];
             long total = 0;
@@ -140,7 +136,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
             Toast.makeText(context.get(), "Ошибка загрузки: " + s, Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(context.get(), "Прайс был успешно загружен!", Toast.LENGTH_SHORT).show();
-            Log.d("filePath", "Файл загружен: " + s);
+            Log.d("filePath", "Файл загружен: " + localUrl);
         }
     }
 }

@@ -125,6 +125,9 @@ public class LaptopCharacteristics {
         this.matrixType = matrixType;
         this.priceInDollars = priceInDollars;
     }
+    public LaptopCharacteristics() {
+
+    }
 
     @Override
     public String toString() {

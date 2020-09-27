@@ -3,24 +3,4 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="download_price_list">Download Price List</string>
-    //URI, URL
-    <string name="url_to_download_file">http://gazikoutlet.com/price/Gazik_laptops_web.xlsx</string>
-    <string name="local_file_name">/prices.xlsx</string>
-    //XLS File Column Names
-    <string name="sheet_name">Tablet</string>
-    <string name="price_col_name">Price, usd</string>
-    <string name="hdd_col_name">HDD</string>
-    <string name="resolution_col_name">RESOLUTION</string>
-    <string name="graphics_col_name">GRAPHICS</string>
-    <string name="screen_col_name">SCREEN</string>
-    <string name="matrix_col_name">MATRIX TYPE</string>
-    <string name="article_col_name">Art</string>
-    <string name="brand_col_name">Brand</string>
-    <string name="model_col_name">Model</string>
-    <string name="cpu_col_name">CPU</string>
-    <string name="ram_col_name">RAM</string>
-    <string name="status_col_name">STATUS</string>
-    //Other
-    <string name="not_found">Не найдено</string>
-    <string name="empty_cell">В ячейке пусто :(</string>
 </resources>
