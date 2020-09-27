@@ -1,11 +1,10 @@
 package ru.kzkovich.laptopushka;
 
+import android.inputmethodservice.Keyboard;
 import android.util.Log;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -15,6 +14,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static android.content.res.Resources.getSystem;
+import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK;
+import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN;
+import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_ERROR;
+import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC;
+import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA;
+import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING;
+import static org.apache.poi.ss.usermodel.Row.RETURN_BLANK_AS_NULL;
 import static ru.kzkovich.laptopushka.R.string.article_col_name;
 import static ru.kzkovich.laptopushka.R.string.empty_cell;
 import static ru.kzkovich.laptopushka.R.string.not_found;
@@ -52,14 +58,13 @@ public class PriceListParcer {
             e.printStackTrace();
         }
         this.sheet = workBook.getSheet(sheetName);
-        this.row = sheet.getRow(getLaptopRowNum(articleNumber));
+        this.row = sheet.getRow(getLaptopRowNum());
     }
 
-    private int getLaptopRowNum(String articleNumber) {
+    private int getLaptopRowNum() {
         int rowNum = 0;
-        String articleCol = getSystem().getString(article_col_name);
         for (Row row : sheet) {
-            String articleStringCellValue = row.getCell(getColNumByName(articleCol)).getStringCellValue();
+            String articleStringCellValue = row.getCell(getColNumByName(articleNumber)).getStringCellValue();
 
             if (articleStringCellValue.equals(articleNumber)) {
                 rowNum = row.getRowNum();
@@ -71,7 +76,7 @@ public class PriceListParcer {
     }
 
     public int getColNumByName(String colName) {
-        XSSFRow headerRow = sheet.getRow(sheet.getFirstRowNum());
+        Row headerRow = sheet.getRow(sheet.getFirstRowNum());
         int colNum = 0;
         for (Cell cell : headerRow) {
 
@@ -84,21 +89,21 @@ public class PriceListParcer {
     }
 
     public String getCellStringValue(int colNum) {
-        Cell cell = row.getCell(colNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+        Cell cell = row.getCell(colNum, RETURN_BLANK_AS_NULL);
 
         if (cell != null) {
             switch (cell.getCellType()) {
-                case FORMULA:
+                case CELL_TYPE_FORMULA:
                     return cell.getCellFormula();
-                case NUMERIC:
+                case CELL_TYPE_NUMERIC:
                     return String.valueOf(cell.getNumericCellValue());
-                case STRING:
+                case CELL_TYPE_STRING:
                     return cell.getStringCellValue();
-                case BLANK:
+                case CELL_TYPE_BLANK:
                     return "";
-                case BOOLEAN:
+                case CELL_TYPE_BOOLEAN:
                     return cell.getBooleanCellValue() ? "true" : "false";
-                case ERROR:
+                case CELL_TYPE_ERROR:
                     return String.valueOf(cell.getErrorCellValue());
                 default:
                     String notFoundString = getSystem().getString(not_found);

@@ -25,14 +25,12 @@ import java.nio.channels.ReadableByteChannel;
 public class DownloadTask extends AsyncTask<String, Integer, String> {
 //    private Context context;
     private PowerManager.WakeLock mWhakeLock;
-    private String priceFileName;
     private WeakReference<ProgressBar> mProgressBar;
     private WeakReference<Context> context;
 
     DownloadTask (Context context, ProgressBar progressBar) {
         this.context = new WeakReference<>(context);
         this.mProgressBar = new WeakReference<>(progressBar);
-        this.priceFileName = "/prices.xlsx";
     }
 
     @Override

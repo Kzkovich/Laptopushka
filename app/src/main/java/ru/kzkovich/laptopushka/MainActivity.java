@@ -63,8 +63,7 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar.setIndeterminate(false);
         localVideoFiles.clear();
 
-        localFile = new File(getDataDir().getAbsolutePath() + "/prices.xlsx");
-        localFile.mkdir();
+        localFile = new File(getFilesDir().getAbsolutePath() + "/prices.xlsx");
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
