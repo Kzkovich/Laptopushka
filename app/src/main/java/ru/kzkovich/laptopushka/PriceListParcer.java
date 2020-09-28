@@ -21,8 +21,18 @@ import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING;
 import static org.apache.poi.ss.usermodel.Row.RETURN_BLANK_AS_NULL;
 import static ru.kzkovich.laptopushka.utils.Constants.ARTICLE_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.BRAND_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.CPU_COL_NAME;
 import static ru.kzkovich.laptopushka.utils.Constants.EMPTY_CELL;
+import static ru.kzkovich.laptopushka.utils.Constants.GRAPHICS_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.HDD_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.MATRIX_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.MODEL_COL_NAME;
 import static ru.kzkovich.laptopushka.utils.Constants.NOT_FOUND;
+import static ru.kzkovich.laptopushka.utils.Constants.PRICE_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.RAM_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.RESOLUTION_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.SCREEN_COL_NAME;
 
 public class PriceListParcer {
     private String articleNumber;
@@ -141,8 +151,32 @@ public class PriceListParcer {
     }
 
     public LaptopCharacteristics getCharacteristicsObject() {
+//        LaptopCharacteristics characteristics = new LaptopCharacteristics(
+//                getCellStringValue(getColNumByName(ARTICLE_COL_NAME), row),
+//                getCellStringValue(getColNumByName(BRAND_COL_NAME), row),
+//                getCellStringValue(getColNumByName(MODEL_COL_NAME), row),
+//                getCellStringValue(getColNumByName(CPU_COL_NAME), row),
+//                getCellStringValue(getColNumByName(SCREEN_COL_NAME), row),
+//                getCellStringValue(getColNumByName(RAM_COL_NAME), row),
+//                getCellStringValue(getColNumByName(HDD_COL_NAME), row),
+//                getCellStringValue(getColNumByName(GRAPHICS_COL_NAME), row),
+//                getCellStringValue(getColNumByName(RESOLUTION_COL_NAME), row),
+//                getCellStringValue(getColNumByName(MATRIX_COL_NAME), row),
+//                25
+//        );
         LaptopCharacteristics characteristics = new LaptopCharacteristics();
+        characteristics.setArticul(getCellStringValue(getColNumByName(ARTICLE_COL_NAME), row));
+        characteristics.setBrand(getCellStringValue(getColNumByName(BRAND_COL_NAME), row));
+        characteristics.setCpu(getCellStringValue(getColNumByName(CPU_COL_NAME), row));
+        characteristics.setGraphics(getCellStringValue(getColNumByName(GRAPHICS_COL_NAME), row));
+        characteristics.setHdd(getCellStringValue(getColNumByName(HDD_COL_NAME), row));
+        characteristics.setMatrixType(getCellStringValue(getColNumByName(MATRIX_COL_NAME), row));
+        characteristics.setModel(getCellStringValue(getColNumByName(MODEL_COL_NAME), row));
+        characteristics.setRam(getCellStringValue(getColNumByName(RAM_COL_NAME), row));
+        characteristics.setResolution(getCellStringValue(getColNumByName(RESOLUTION_COL_NAME), row));
+        characteristics.setScreen(getCellStringValue(getColNumByName(SCREEN_COL_NAME), row));
+        characteristics.setPriceInDollars(Double.parseDouble(getCellStringValue(getColNumByName(PRICE_COL_NAME), row)));
 
-        return null;
+        return characteristics;
     }
 }

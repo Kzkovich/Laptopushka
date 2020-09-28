@@ -1,7 +1,6 @@
 package ru.kzkovich.laptopushka;
 
 public class LaptopCharacteristics {
-    private String urlToFile;
 
     private String articul;
     private String brand;
@@ -13,15 +12,7 @@ public class LaptopCharacteristics {
     private String graphics;
     private String resolution;
     private String matrixType;
-    private int priceInDollars;
-
-    public String getUrlToFile() {
-        return urlToFile;
-    }
-
-    public void setUrlToFile(String urlToFile) {
-        this.urlToFile = urlToFile;
-    }
+    private Double priceInDollars;
 
     public String getArticul() {
         return articul;
@@ -103,16 +94,15 @@ public class LaptopCharacteristics {
         this.matrixType = matrixType;
     }
 
-    public int getPriceInDollars() {
+    public Double getPriceInDollars() {
         return priceInDollars;
     }
 
-    public void setPriceInDollars(int priceInDollars) {
+    public void setPriceInDollars(Double priceInDollars) {
         this.priceInDollars = priceInDollars;
     }
 
-    public LaptopCharacteristics(String urlToFile, String articul, String brand, String model, String cpu, String screen, String ram, String hdd, String graphics, String resolution, String matrixType, int priceInDollars) {
-        this.urlToFile = urlToFile;
+    public LaptopCharacteristics(String articul, String brand, String model, String cpu, String screen, String ram, String hdd, String graphics, String resolution, String matrixType, Double priceInDollars) {
         this.articul = articul;
         this.brand = brand;
         this.model = model;
@@ -132,8 +122,7 @@ public class LaptopCharacteristics {
     @Override
     public String toString() {
         return "LaptopCharacteristics{" +
-                "urlToFile='" + urlToFile + '\'' +
-                ", articul='" + articul + '\'' +
+                "articul='" + articul + '\'' +
                 ", brand='" + brand + '\'' +
                 ", model='" + model + '\'' +
                 ", cpu='" + cpu + '\'' +

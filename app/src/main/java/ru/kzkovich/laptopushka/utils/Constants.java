@@ -19,7 +19,7 @@ public class Constants {
     public static final String RAM_COL_NAME = "RAM";
     public static final String STATUS_COL_NAME = "STATUS";
 
-    //Pthers
+    //Others
     public static final String NOT_FOUND = "Не найдено";
-    public static final String EMPTY_CELL = "В ячейке пусто :(";
+    public static final String EMPTY_CELL = "Неизвестно :(";
 }
