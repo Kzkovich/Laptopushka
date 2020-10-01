@@ -1,4 +1,4 @@
-package ru.kzkovich.laptopushka;
+package ru.kzkovich.laptopushka.services;
 
 import android.util.Log;
 
@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
 
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN;
@@ -151,32 +153,30 @@ public class PriceListParcer {
     }
 
     public LaptopCharacteristics getCharacteristicsObject() {
-//        LaptopCharacteristics characteristics = new LaptopCharacteristics(
-//                getCellStringValue(getColNumByName(ARTICLE_COL_NAME), row),
-//                getCellStringValue(getColNumByName(BRAND_COL_NAME), row),
-//                getCellStringValue(getColNumByName(MODEL_COL_NAME), row),
-//                getCellStringValue(getColNumByName(CPU_COL_NAME), row),
-//                getCellStringValue(getColNumByName(SCREEN_COL_NAME), row),
-//                getCellStringValue(getColNumByName(RAM_COL_NAME), row),
-//                getCellStringValue(getColNumByName(HDD_COL_NAME), row),
-//                getCellStringValue(getColNumByName(GRAPHICS_COL_NAME), row),
-//                getCellStringValue(getColNumByName(RESOLUTION_COL_NAME), row),
-//                getCellStringValue(getColNumByName(MATRIX_COL_NAME), row),
-//                25
-//        );
-        LaptopCharacteristics characteristics = new LaptopCharacteristics();
-        characteristics.setArticul(getCellStringValue(getColNumByName(ARTICLE_COL_NAME), row));
-        characteristics.setBrand(getCellStringValue(getColNumByName(BRAND_COL_NAME), row));
-        characteristics.setCpu(getCellStringValue(getColNumByName(CPU_COL_NAME), row));
-        characteristics.setGraphics(getCellStringValue(getColNumByName(GRAPHICS_COL_NAME), row));
-        characteristics.setHdd(getCellStringValue(getColNumByName(HDD_COL_NAME), row));
-        characteristics.setMatrixType(getCellStringValue(getColNumByName(MATRIX_COL_NAME), row));
-        characteristics.setModel(getCellStringValue(getColNumByName(MODEL_COL_NAME), row));
-        characteristics.setRam(getCellStringValue(getColNumByName(RAM_COL_NAME), row));
-        characteristics.setResolution(getCellStringValue(getColNumByName(RESOLUTION_COL_NAME), row));
-        characteristics.setScreen(getCellStringValue(getColNumByName(SCREEN_COL_NAME), row));
-        characteristics.setPriceInDollars(Double.parseDouble(getCellStringValue(getColNumByName(PRICE_COL_NAME), row)));
-
+        int nArticle = getColNumByName(ARTICLE_COL_NAME);
+        int nBrand = getColNumByName(BRAND_COL_NAME);
+        int nModel = getColNumByName(MODEL_COL_NAME);
+        int nCPU = getColNumByName(CPU_COL_NAME);
+        int nScreen = getColNumByName(SCREEN_COL_NAME);
+        int nRAM = getColNumByName(RAM_COL_NAME);
+        int nHDD = getColNumByName(HDD_COL_NAME);
+        int nGraphics = getColNumByName(GRAPHICS_COL_NAME);
+        int nResolution = getColNumByName(RESOLUTION_COL_NAME);
+        int nMatrix = getColNumByName(MATRIX_COL_NAME);
+        int nPrice = getColNumByName(PRICE_COL_NAME);
+        LaptopCharacteristics characteristics = new LaptopCharacteristics(
+                getCellStringValue(nArticle, row),
+                getCellStringValue(nBrand, row),
+                getCellStringValue(nModel, row),
+                getCellStringValue(nCPU, row),
+                getCellStringValue(nScreen, row),
+                getCellStringValue(nRAM, row),
+                getCellStringValue(nHDD, row),
+                getCellStringValue(nGraphics, row),
+                getCellStringValue(nResolution, row),
+                getCellStringValue(nMatrix, row),
+                Double.parseDouble(getCellStringValue(nPrice, row))
+        );
         return characteristics;
     }
 }

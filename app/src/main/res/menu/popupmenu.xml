@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/secretMenu">
+        <item
+            android:id="@+id/enterPassword"
+            android:icon="@drawable/ic_baseline_priority_high_24"
+            android:iconTint="@color/black_overlay"
+            android:title="Настройки">
+        </item>
+    </group>
+</menu>

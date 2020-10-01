@@ -1,4 +1,4 @@
-package ru.kzkovich.laptopushka;
+package ru.kzkovich.laptopushka.models;
 
 public class LaptopCharacteristics {
 

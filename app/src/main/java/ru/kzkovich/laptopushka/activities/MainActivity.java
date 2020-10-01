@@ -1,22 +1,28 @@
-package ru.kzkovich.laptopushka;
+package ru.kzkovich.laptopushka.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
-import android.app.DownloadManager;
-import android.content.Context;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.kzkovich.laptopushka.services.DownloadTask;
+import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
+import ru.kzkovich.laptopushka.services.PriceListParcer;
+import ru.kzkovich.laptopushka.R;
 
 import static ru.kzkovich.laptopushka.utils.Constants.URL_TO_DOWNLOAD_FILE;
 
@@ -29,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     File localFile;
     private static int currentVideo = 0;
     ProgressBar mProgressBar;
+    ImageButton mMenuButton;
     TextView mChrBrand;
     TextView mChrModel;
     TextView mChrCPU;
@@ -45,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
         findAllViews();
+            mMenuButton.setOnClickListener(viewClickListener);
         mProgressBar.setIndeterminate(false);
         localVideoFiles.clear();
 
@@ -66,6 +74,36 @@ public class MainActivity extends AppCompatActivity {
         mChrResolution = findViewById(R.id.chrResolution);
         mChrMatrix = findViewById(R.id.chrMatrix);
         mChrPrice = findViewById(R.id.chrPrice);
+        mMenuButton = findViewById(R.id.menu_imagebutton);
+    }
+
+    View.OnClickListener viewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showPopupMenu(v);
+        }
+    };
+
+    private void showPopupMenu(View v) {
+        PopupMenu popupMenu = new PopupMenu(this, v);
+        popupMenu.inflate(R.menu.popupmenu);
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.enterPassword:
+                    Toast.makeText(MainActivity.this, "Secret", Toast.LENGTH_SHORT).show();
+                    FragmentManager manager = getSupportFragmentManager();
+                    PasswordDialog passwordDialog = new PasswordDialog();
+                    passwordDialog.show(manager, "passwordDialog");
+                default:
+                    return true;
+            }
+        });
+
+        popupMenu.setOnDismissListener(menu ->
+                Toast.makeText(MainActivity.this, ":(", Toast.LENGTH_SHORT).show());
+
+        popupMenu.show();
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -95,36 +133,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void downloadPrice(View view) {
-
         final DownloadTask downloadTask = new DownloadTask(MainActivity.this, mProgressBar);
         downloadTask.execute(URL_TO_DOWNLOAD_FILE, localFile.getAbsolutePath());
     }
 
-
-
-    public static String getDataDir(Context context) throws Exception {
-        return context.getPackageManager()
-                .getPackageInfo(context.getPackageName(), 0)
-                .applicationInfo.dataDir;
-    }
-
     public void playVideo(View view) {
-        mPlayButton.setVisibility(View.GONE);
         Uri video = Uri.parse(localVideoFiles.get(0));
         mVideoView.setVideoURI(video);
         mVideoView.start();
-        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                if (!(currentVideo < localVideoFiles.size())) {
-                    return;
-                }
-                Uri nextUri = Uri.parse(localVideoFiles.get(currentVideo++));
-                mVideoView.setVideoURI(nextUri);
-                mVideoView.start();
-                if (currentVideo == localVideoFiles.size()) {
-                    currentVideo = 0;
-                }
+        mVideoView.setOnCompletionListener(mp -> {
+            if (!(currentVideo < localVideoFiles.size())) {
+                return;
+            }
+            Uri nextUri = Uri.parse(localVideoFiles.get(currentVideo++));
+            mVideoView.setVideoURI(nextUri);
+            mVideoView.start();
+            if (currentVideo == localVideoFiles.size()) {
+                currentVideo = 0;
             }
         });
     }

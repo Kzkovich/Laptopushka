@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0099cc"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
@@ -288,6 +288,16 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/menu_imagebutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/ic_baseline_vpn_key_24">
+        </ImageButton>
 
     </FrameLayout>
 

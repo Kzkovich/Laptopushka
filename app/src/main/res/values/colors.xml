@@ -3,6 +3,8 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="colorOKButton">#004D40</color>
+    <color name="colorCancelButton">#B71C1C</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>

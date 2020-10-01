@@ -1,4 +1,4 @@
-package ru.kzkovich.laptopushka;
+package ru.kzkovich.laptopushka.services;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -23,7 +23,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
     private WeakReference<Context> context;
     private String localUrl;
 
-    DownloadTask (Context context, ProgressBar progressBar) {
+    public DownloadTask(Context context, ProgressBar progressBar) {
         this.context = new WeakReference<>(context);
         this.mProgressBar = new WeakReference<>(progressBar);
     }
