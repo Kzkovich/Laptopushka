@@ -22,4 +22,7 @@ public class Constants {
     //Others
     public static final String NOT_FOUND = "Не найдено";
     public static final String EMPTY_CELL = "Неизвестно :(";
+
+    //Secret
+    public static final String SETTINGS_PASSWORD = "73501505";
 }

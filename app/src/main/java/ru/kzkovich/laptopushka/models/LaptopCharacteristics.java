@@ -1,7 +1,12 @@
 package ru.kzkovich.laptopushka.models;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "laptop_characteristics")
 public class LaptopCharacteristics {
 
+    @PrimaryKey
     private String articul;
     private String brand;
     private String model;

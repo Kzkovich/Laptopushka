@@ -1,13 +1,16 @@
 package ru.kzkovich.laptopushka.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -24,11 +27,15 @@ import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
 import ru.kzkovich.laptopushka.services.PriceListParcer;
 import ru.kzkovich.laptopushka.R;
 
+import static ru.kzkovich.laptopushka.utils.Constants.SETTINGS_PASSWORD;
 import static ru.kzkovich.laptopushka.utils.Constants.URL_TO_DOWNLOAD_FILE;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements PasswordDialog.PasswordDialogListener {
 
     private List<String> localVideoFiles = new ArrayList<>();
+    FragmentManager manager;
+    PasswordDialog passwordDialog;
     VideoView mVideoView;
     Button mDownloadButton;
     Button mPlayButton;
@@ -46,13 +53,15 @@ public class MainActivity extends AppCompatActivity {
     TextView mChrResolution;
     TextView mChrMatrix;
     TextView mChrPrice;
+    static int retryPassword = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
         findAllViews();
-            mMenuButton.setOnClickListener(viewClickListener);
+        manager = getSupportFragmentManager();
+        mMenuButton.setOnClickListener(viewClickListener);
         mProgressBar.setIndeterminate(false);
         localVideoFiles.clear();
 
@@ -87,22 +96,16 @@ public class MainActivity extends AppCompatActivity {
     private void showPopupMenu(View v) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.inflate(R.menu.popupmenu);
-
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.enterPassword:
                     Toast.makeText(MainActivity.this, "Secret", Toast.LENGTH_SHORT).show();
-                    FragmentManager manager = getSupportFragmentManager();
-                    PasswordDialog passwordDialog = new PasswordDialog();
+                    passwordDialog = new PasswordDialog();
                     passwordDialog.show(manager, "passwordDialog");
                 default:
                     return true;
             }
         });
-
-        popupMenu.setOnDismissListener(menu ->
-                Toast.makeText(MainActivity.this, ":(", Toast.LENGTH_SHORT).show());
-
         popupMenu.show();
     }
 
@@ -168,5 +171,31 @@ public class MainActivity extends AppCompatActivity {
         mChrMatrix.setText(characteristics.getMatrixType());
         mChrPrice.setText(characteristics.getPriceInDollars().toString());
         Log.d("LaptopCharacteristic", characteristics.toString());
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        ++retryPassword;
+        EditText passwordET = dialog.getDialog().findViewById(R.id.passwordEditText);
+        String password = passwordET.getText().toString();
+        if (isPasswordOk(password)) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+        } else {
+            Toast.makeText(this, "Пароль не тот", Toast.LENGTH_SHORT).show();
+            passwordDialog = new PasswordDialog();
+            passwordDialog.show(manager, "Retry password attempt #" + retryPassword);
+
+        }
+
+    }
+
+    private boolean isPasswordOk(String password) {
+        return password.equals(SETTINGS_PASSWORD);
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        Toast.makeText(this, "Ну как хошь", Toast.LENGTH_SHORT).show();
     }
 }
