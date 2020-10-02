@@ -2,8 +2,6 @@ package ru.kzkovich.laptopushka.repository;
 
 import android.app.Application;
 
-import androidx.lifecycle.LiveData;
-
 import java.util.List;
 
 import ru.kzkovich.laptopushka.dao.CharacteristicsConfigDAO;
@@ -16,8 +14,8 @@ public class CharacteristicsRepository {
 
     private LaptopCharacteristicsDAO characteristicsDAO;
     private CharacteristicsConfigDAO configDAO;
-    private LiveData<List<LaptopCharacteristics>> allCharacteristics;
-    private LiveData<List<CharacteristicsConfig>> allConfigs;
+    private List<LaptopCharacteristics> allCharacteristics;
+    private List<CharacteristicsConfig> allConfigs;
 
     public CharacteristicsRepository(Application application) {
         AppDatabase db = AppDatabase.getDatabase(application);
@@ -27,11 +25,11 @@ public class CharacteristicsRepository {
         allConfigs = configDAO.loadConfig();
     }
 
-    public LiveData<List<LaptopCharacteristics>> getAllCharacteristics() {
+    public List<LaptopCharacteristics> getAllCharacteristics() {
         return allCharacteristics;
     }
 
-    public LiveData<List<CharacteristicsConfig>> getAllConfigs() {
+    public List<CharacteristicsConfig> getAllConfigs() {
         return allConfigs;
     }
 

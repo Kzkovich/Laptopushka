@@ -1,5 +1,6 @@
 package ru.kzkovich.laptopushka.models;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -7,6 +8,7 @@ import androidx.room.PrimaryKey;
 public class LaptopCharacteristics {
 
     @PrimaryKey
+    @NonNull
     private String articul;
     private String brand;
     private String model;
@@ -119,9 +121,6 @@ public class LaptopCharacteristics {
         this.resolution = resolution;
         this.matrixType = matrixType;
         this.priceInDollars = priceInDollars;
-    }
-    public LaptopCharacteristics() {
-
     }
 
     @Override

@@ -1,6 +1,5 @@
 package ru.kzkovich.laptopushka.dao;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -25,8 +24,8 @@ public interface LaptopCharacteristicsDAO {
     public void deleteCharacteristics(LaptopCharacteristics characteristics);
 
     @Query("SELECT * FROM laptop_characteristics")
-    public LiveData<List<LaptopCharacteristics>> loadCharacteristics();
+    public List<LaptopCharacteristics> loadCharacteristics();
 
     @Query("SELECT * FROM laptop_characteristics WHERE articul LIKE :articul")
-    public LiveData<List<LaptopCharacteristics>> findCharacteristicsWithArticul(String articul);
+    public List<LaptopCharacteristics> findCharacteristicsWithArticul(String articul);
 }

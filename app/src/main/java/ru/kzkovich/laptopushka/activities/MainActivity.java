@@ -1,11 +1,8 @@
 package ru.kzkovich.laptopushka.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,14 +15,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.kzkovich.laptopushka.services.DownloadTask;
-import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
-import ru.kzkovich.laptopushka.services.PriceListParcer;
 import ru.kzkovich.laptopushka.R;
+import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
+import ru.kzkovich.laptopushka.repository.CharacteristicsRepository;
+import ru.kzkovich.laptopushka.services.DownloadTask;
+import ru.kzkovich.laptopushka.services.PriceListParcer;
 
 import static ru.kzkovich.laptopushka.utils.Constants.SETTINGS_PASSWORD;
 import static ru.kzkovich.laptopushka.utils.Constants.URL_TO_DOWNLOAD_FILE;
@@ -160,6 +162,10 @@ public class MainActivity extends AppCompatActivity
     public void populateCharacteristics(View view) {
         final PriceListParcer priceListParcer = new PriceListParcer("N1019410", localFile.getAbsolutePath());
         LaptopCharacteristics characteristics = priceListParcer.getCharacteristicsObject();
+        AsyncTask.execute(() -> {
+            CharacteristicsRepository repository = new CharacteristicsRepository(getApplication());
+            repository.insert(characteristics);
+        });
         mChrBrand.setText(characteristics.getBrand());
         mChrModel.setText(characteristics.getModel());
         mChrCPU.setText(characteristics.getCpu());

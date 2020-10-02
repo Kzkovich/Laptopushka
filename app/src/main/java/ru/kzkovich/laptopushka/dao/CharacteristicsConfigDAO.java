@@ -1,6 +1,5 @@
 package ru.kzkovich.laptopushka.dao;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -25,8 +24,8 @@ public interface CharacteristicsConfigDAO {
     public void deleteConfig(CharacteristicsConfig config);
 
     @Query("SELECT * FROM config")
-    public LiveData<List<CharacteristicsConfig>> loadConfig();
+    public List<CharacteristicsConfig> loadConfig();
 
     @Query("SELECT * FROM config WHERE articul LIKE :articul")
-    public LiveData<List<CharacteristicsConfig>> loadConfigWithArticul(String articul);
+    public List<CharacteristicsConfig> loadConfigWithArticul(String articul);
 }

@@ -1,5 +1,6 @@
 package ru.kzkovich.laptopushka.models;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -7,12 +8,11 @@ import androidx.room.PrimaryKey;
 public class CharacteristicsConfig {
 
     @PrimaryKey
+    @NonNull
     private String articul;
     private Double rate;
 
-    CharacteristicsConfig(){};
-
-    CharacteristicsConfig(String articul, Double rate) {
+    public CharacteristicsConfig(String articul, Double rate) {
         this.articul = articul;
         this.rate = rate;
     }

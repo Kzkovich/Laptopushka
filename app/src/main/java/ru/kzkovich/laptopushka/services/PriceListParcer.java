@@ -177,6 +177,7 @@ public class PriceListParcer {
                 getCellStringValue(nMatrix, row),
                 Double.parseDouble(getCellStringValue(nPrice, row))
         );
+
         return characteristics;
     }
 }
