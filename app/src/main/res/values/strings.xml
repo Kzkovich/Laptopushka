@@ -3,4 +3,8 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="download_price_list">Download Price List</string>
+    <string name="enter_password">Введи пароль</string>
+    <string name="password_reminder">password reminder</string>
+    <string name="looks_like_it_is">Вроде тот</string>
+    <string name="cancel_fuck">Передумал, закрыть</string>
 </resources>

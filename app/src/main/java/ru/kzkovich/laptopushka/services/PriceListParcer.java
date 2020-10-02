@@ -1,4 +1,4 @@
-package ru.kzkovich.laptopushka;
+package ru.kzkovich.laptopushka.services;
 
 import android.util.Log;
 
@@ -13,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
+
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_ERROR;
@@ -21,8 +23,18 @@ import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING;
 import static org.apache.poi.ss.usermodel.Row.RETURN_BLANK_AS_NULL;
 import static ru.kzkovich.laptopushka.utils.Constants.ARTICLE_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.BRAND_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.CPU_COL_NAME;
 import static ru.kzkovich.laptopushka.utils.Constants.EMPTY_CELL;
+import static ru.kzkovich.laptopushka.utils.Constants.GRAPHICS_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.HDD_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.MATRIX_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.MODEL_COL_NAME;
 import static ru.kzkovich.laptopushka.utils.Constants.NOT_FOUND;
+import static ru.kzkovich.laptopushka.utils.Constants.PRICE_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.RAM_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.RESOLUTION_COL_NAME;
+import static ru.kzkovich.laptopushka.utils.Constants.SCREEN_COL_NAME;
 
 public class PriceListParcer {
     private String articleNumber;
@@ -141,8 +153,30 @@ public class PriceListParcer {
     }
 
     public LaptopCharacteristics getCharacteristicsObject() {
-        LaptopCharacteristics characteristics = new LaptopCharacteristics();
-
-        return null;
+        int nArticle = getColNumByName(ARTICLE_COL_NAME);
+        int nBrand = getColNumByName(BRAND_COL_NAME);
+        int nModel = getColNumByName(MODEL_COL_NAME);
+        int nCPU = getColNumByName(CPU_COL_NAME);
+        int nScreen = getColNumByName(SCREEN_COL_NAME);
+        int nRAM = getColNumByName(RAM_COL_NAME);
+        int nHDD = getColNumByName(HDD_COL_NAME);
+        int nGraphics = getColNumByName(GRAPHICS_COL_NAME);
+        int nResolution = getColNumByName(RESOLUTION_COL_NAME);
+        int nMatrix = getColNumByName(MATRIX_COL_NAME);
+        int nPrice = getColNumByName(PRICE_COL_NAME);
+        LaptopCharacteristics characteristics = new LaptopCharacteristics(
+                getCellStringValue(nArticle, row),
+                getCellStringValue(nBrand, row),
+                getCellStringValue(nModel, row),
+                getCellStringValue(nCPU, row),
+                getCellStringValue(nScreen, row),
+                getCellStringValue(nRAM, row),
+                getCellStringValue(nHDD, row),
+                getCellStringValue(nGraphics, row),
+                getCellStringValue(nResolution, row),
+                getCellStringValue(nMatrix, row),
+                Double.parseDouble(getCellStringValue(nPrice, row))
+        );
+        return characteristics;
     }
 }
