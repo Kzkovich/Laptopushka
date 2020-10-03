@@ -19,7 +19,7 @@ public class LaptopCharacteristics {
     private String graphics;
     private String resolution;
     private String matrixType;
-    private Double priceInDollars;
+    private Double priceInUAH;
 
     public String getArticul() {
         return articul;
@@ -101,15 +101,15 @@ public class LaptopCharacteristics {
         this.matrixType = matrixType;
     }
 
-    public Double getPriceInDollars() {
-        return priceInDollars;
+    public Double getPriceInUAH() {
+        return priceInUAH;
     }
 
-    public void setPriceInDollars(Double priceInDollars) {
-        this.priceInDollars = priceInDollars;
+    public void setPriceInDollars(Double priceInUAH) {
+        this.priceInUAH = priceInUAH;
     }
 
-    public LaptopCharacteristics(String articul, String brand, String model, String cpu, String screen, String ram, String hdd, String graphics, String resolution, String matrixType, Double priceInDollars) {
+    public LaptopCharacteristics(String articul, String brand, String model, String cpu, String screen, String ram, String hdd, String graphics, String resolution, String matrixType, Double priceInUAH) {
         this.articul = articul;
         this.brand = brand;
         this.model = model;
@@ -120,7 +120,7 @@ public class LaptopCharacteristics {
         this.graphics = graphics;
         this.resolution = resolution;
         this.matrixType = matrixType;
-        this.priceInDollars = priceInDollars;
+        this.priceInUAH = priceInUAH;
     }
 
     @Override
@@ -136,7 +136,7 @@ public class LaptopCharacteristics {
                 ", graphics='" + graphics + '\'' +
                 ", resolution='" + resolution + '\'' +
                 ", matrixType='" + matrixType + '\'' +
-                ", priceInDollars=" + priceInDollars +
+                ", priceInUAH=" + priceInUAH +
                 '}';
     }
 }

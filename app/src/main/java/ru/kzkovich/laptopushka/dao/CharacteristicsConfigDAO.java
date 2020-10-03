@@ -15,7 +15,7 @@ import ru.kzkovich.laptopushka.models.CharacteristicsConfig;
 public interface CharacteristicsConfigDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public void insertConfig(CharacteristicsConfig config);
+    public long insertConfig(CharacteristicsConfig config);
 
     @Update
     public void updateConfig(CharacteristicsConfig config);

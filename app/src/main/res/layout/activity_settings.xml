@@ -14,30 +14,37 @@
         android:layout_margin="10dp"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:text="Артикул"/>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputArticul"
+            app:errorEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/articulET"
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Артикул"
+                android:inputType="text">
+            </com.google.android.material.textfield.TextInputEditText>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputRate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="для поиска из файла-прайса, Лист Laptops"/>
+            app:errorEnabled="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:textSize="25sp"
-            android:text="Курс валюты"/>
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="Курс валюты"
+                android:text="0"
+                android:inputType="numberDecimal">
+            </com.google.android.material.textfield.TextInputEditText>
 
-        <EditText
-            android:id="@+id/rateET"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="магазинный курс, конечно же :D"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

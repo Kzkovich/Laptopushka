@@ -13,7 +13,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import ru.kzkovich.laptopushka.models.CharacteristicsConfig;
 import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
+import ru.kzkovich.laptopushka.repository.CharacteristicsRepository;
 
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN;
@@ -38,24 +40,23 @@ import static ru.kzkovich.laptopushka.utils.Constants.SCREEN_COL_NAME;
 
 public class PriceListParcer {
     private String articleNumber;
-    private String localPathToPriceList;
     private XSSFWorkbook workBook;
     private XSSFSheet sheet;
     private XSSFRow row;
-
+    private CharacteristicsRepository repository;
+    private CharacteristicsConfig config;
     private String sheetName = "Tablet";
 
     public PriceListParcer() {
         this.articleNumber = null;
-        this.localPathToPriceList = null;
         this.workBook = null;
         this.sheet = null;
         this.row = null;
     }
 
-    public PriceListParcer(String articleNumber, String localPathToPriceList) {
-        this.articleNumber = articleNumber;
-        this.localPathToPriceList = localPathToPriceList;
+    public PriceListParcer(CharacteristicsConfig config, String localPathToPriceList) {
+        this.config = config;
+        this.articleNumber = config.getArticul();
         FileInputStream price = null;
         try {
             price = new FileInputStream(new File(localPathToPriceList));
@@ -163,7 +164,10 @@ public class PriceListParcer {
         int nGraphics = getColNumByName(GRAPHICS_COL_NAME);
         int nResolution = getColNumByName(RESOLUTION_COL_NAME);
         int nMatrix = getColNumByName(MATRIX_COL_NAME);
-        int nPrice = getColNumByName(PRICE_COL_NAME);
+        Double nPrice = Double.parseDouble(getCellStringValue(getColNumByName(PRICE_COL_NAME), row));
+
+        Double priceInUAH = calculatePrice(nPrice, config);
+
         LaptopCharacteristics characteristics = new LaptopCharacteristics(
                 getCellStringValue(nArticle, row),
                 getCellStringValue(nBrand, row),
@@ -175,9 +179,16 @@ public class PriceListParcer {
                 getCellStringValue(nGraphics, row),
                 getCellStringValue(nResolution, row),
                 getCellStringValue(nMatrix, row),
-                Double.parseDouble(getCellStringValue(nPrice, row))
+                priceInUAH
         );
+
 
         return characteristics;
     }
+
+    private Double calculatePrice(Double nPrice, CharacteristicsConfig config) {
+        Double rate = config.getRate();
+        return rate * nPrice;
+    }
+
 }

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.kzkovich.laptopushka.R;
+import ru.kzkovich.laptopushka.models.CharacteristicsConfig;
 import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
 import ru.kzkovich.laptopushka.repository.CharacteristicsRepository;
 import ru.kzkovich.laptopushka.services.DownloadTask;
@@ -37,12 +38,20 @@ public class MainActivity extends AppCompatActivity
 
     private List<String> localVideoFiles = new ArrayList<>();
     FragmentManager manager;
+    CharacteristicsRepository repository;
+    LaptopCharacteristics characteristics;
+    CharacteristicsConfig config;
     PasswordDialog passwordDialog;
     VideoView mVideoView;
     Button mDownloadButton;
     Button mPlayButton;
     File localFile;
+
+    Boolean characteristicsUpdated;
+    Boolean configsUpdated;
+    Boolean fileDownloaded;
     private static int currentVideo = 0;
+
     ProgressBar mProgressBar;
     ImageButton mMenuButton;
     TextView mChrBrand;
@@ -66,8 +75,24 @@ public class MainActivity extends AppCompatActivity
         mMenuButton.setOnClickListener(viewClickListener);
         mProgressBar.setIndeterminate(false);
         localVideoFiles.clear();
-
         localFile = new File(getFilesDir().getAbsolutePath() + "/prices.xlsx");
+        configsUpdated = false;
+        characteristicsUpdated = false;
+        fileDownloaded = false;
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                repository = new CharacteristicsRepository(getApplication());
+            }
+        });
+
+        new ReadConfigFromDBASyncTask();
+//        while (!configsUpdated) {
+//            System.out.println("updating config");
+//        }
+        downloadPrice();
+        new PriceListParcer(config, localFile.getAbsolutePath());
+        populateCharacteristics();
     }
 
     private void findAllViews() {
@@ -137,7 +162,7 @@ public class MainActivity extends AppCompatActivity
                 | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
-    public void downloadPrice(View view) {
+    public void downloadPrice() {
         final DownloadTask downloadTask = new DownloadTask(MainActivity.this, mProgressBar);
         downloadTask.execute(URL_TO_DOWNLOAD_FILE, localFile.getAbsolutePath());
     }
@@ -159,13 +184,13 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    public void populateCharacteristics(View view) {
-        final PriceListParcer priceListParcer = new PriceListParcer("N1019410", localFile.getAbsolutePath());
-        LaptopCharacteristics characteristics = priceListParcer.getCharacteristicsObject();
-        AsyncTask.execute(() -> {
-            CharacteristicsRepository repository = new CharacteristicsRepository(getApplication());
-            repository.insert(characteristics);
-        });
+    public void populateCharacteristics() {
+//        final PriceListParcer priceListParcer = new PriceListParcer("N1019410", localFile.getAbsolutePath());
+//        LaptopCharacteristics characteristics = priceListParcer.getCharacteristicsObject();
+        new ReadCharsFromDBAsyncTask();
+        while (!characteristicsUpdated) {
+            System.out.println("waiting for characteristics...");
+        }
         mChrBrand.setText(characteristics.getBrand());
         mChrModel.setText(characteristics.getModel());
         mChrCPU.setText(characteristics.getCpu());
@@ -175,7 +200,7 @@ public class MainActivity extends AppCompatActivity
         mChrGraphics.setText(characteristics.getGraphics());
         mChrResolution.setText(characteristics.getResolution());
         mChrMatrix.setText(characteristics.getMatrixType());
-        mChrPrice.setText(characteristics.getPriceInDollars().toString());
+        mChrPrice.setText(characteristics.getPriceInUAH().toString());
         Log.d("LaptopCharacteristic", characteristics.toString());
     }
 
@@ -194,6 +219,36 @@ public class MainActivity extends AppCompatActivity
 
         }
 
+    }
+
+    private class ReadCharsFromDBAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            repository = new CharacteristicsRepository(getApplication());
+            characteristics = repository.getAllCharacteristics().get(0);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            characteristicsUpdated = true;
+        }
+    }
+
+    private class ReadConfigFromDBASyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            config = repository.getAllConfigs().get(0);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            configsUpdated = true;
+        }
     }
 
     private boolean isPasswordOk(String password) {

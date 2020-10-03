@@ -14,7 +14,7 @@ import ru.kzkovich.laptopushka.dao.LaptopCharacteristicsDAO;
 import ru.kzkovich.laptopushka.models.CharacteristicsConfig;
 import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
 
-@Database(entities = {LaptopCharacteristics.class, CharacteristicsConfig.class}, version = 1, exportSchema = false)
+@Database(entities = {LaptopCharacteristics.class, CharacteristicsConfig.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract LaptopCharacteristicsDAO characteristicsDAO();
     public abstract CharacteristicsConfigDAO characteristicsConfigDAO();
