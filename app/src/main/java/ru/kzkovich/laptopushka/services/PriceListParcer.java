@@ -15,7 +15,6 @@ import java.io.IOException;
 
 import ru.kzkovich.laptopushka.models.CharacteristicsConfig;
 import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
-import ru.kzkovich.laptopushka.repository.CharacteristicsRepository;
 
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN;
@@ -43,7 +42,6 @@ public class PriceListParcer {
     private XSSFWorkbook workBook;
     private XSSFSheet sheet;
     private XSSFRow row;
-    private CharacteristicsRepository repository;
     private CharacteristicsConfig config;
     private String sheetName = "Tablet";
 

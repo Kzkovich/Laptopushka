@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".activities.SettingsActivity"
             android:screenOrientation="landscape"
-            android:label="Настройки">
+            android:label="Laptopushka">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

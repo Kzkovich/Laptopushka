@@ -1,9 +1,10 @@
 package ru.kzkovich.laptopushka.activities;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -26,19 +29,19 @@ import java.util.List;
 import ru.kzkovich.laptopushka.R;
 import ru.kzkovich.laptopushka.models.CharacteristicsConfig;
 import ru.kzkovich.laptopushka.models.LaptopCharacteristics;
-import ru.kzkovich.laptopushka.repository.CharacteristicsRepository;
 import ru.kzkovich.laptopushka.services.DownloadTask;
 import ru.kzkovich.laptopushka.services.PriceListParcer;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static ru.kzkovich.laptopushka.utils.Constants.SETTINGS_PASSWORD;
 import static ru.kzkovich.laptopushka.utils.Constants.URL_TO_DOWNLOAD_FILE;
 
 public class MainActivity extends AppCompatActivity
         implements PasswordDialog.PasswordDialogListener {
 
-    private List<String> localVideoFiles = new ArrayList<>();
+    private List<File> localVideoFiles = new ArrayList<>();
+    private static final int PERMISSION_REQUEST_CODE = 100;
     FragmentManager manager;
-    CharacteristicsRepository repository;
     LaptopCharacteristics characteristics;
     CharacteristicsConfig config;
     PasswordDialog passwordDialog;
@@ -47,9 +50,6 @@ public class MainActivity extends AppCompatActivity
     Button mPlayButton;
     File localFile;
 
-    Boolean characteristicsUpdated;
-    Boolean configsUpdated;
-    Boolean fileDownloaded;
     private static int currentVideo = 0;
 
     ProgressBar mProgressBar;
@@ -70,35 +70,75 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
+        Intent intent = getIntent();
+        config = new CharacteristicsConfig(intent.getStringExtra("articul"), intent.getDoubleExtra("rate", 0));
         findAllViews();
         manager = getSupportFragmentManager();
         mMenuButton.setOnClickListener(viewClickListener);
         mProgressBar.setIndeterminate(false);
         localVideoFiles.clear();
+        playVideo();
         localFile = new File(getFilesDir().getAbsolutePath() + "/prices.xlsx");
-        configsUpdated = false;
-        characteristicsUpdated = false;
-        fileDownloaded = false;
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                repository = new CharacteristicsRepository(getApplication());
-            }
-        });
 
-        new ReadConfigFromDBASyncTask();
-//        while (!configsUpdated) {
-//            System.out.println("updating config");
-//        }
         downloadPrice();
-        new PriceListParcer(config, localFile.getAbsolutePath());
         populateCharacteristics();
     }
 
+    private List<File> populateVideoPaths(File parentDir) {
+        ArrayList<File> inFiles = new ArrayList<File>();
+        File[] files;
+
+        requestPermission();
+
+        if (checkPermission()) {
+            files = parentDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.getName().endsWith(".mp4")) {
+                        if (!inFiles.contains(file)) inFiles.add(file);
+                    }
+                }
+            }
+        } else {
+            requestPermission();
+        }
+        return inFiles;
+    }
+
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(MainActivity.this, WRITE_EXTERNAL_STORAGE);
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void requestPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                WRITE_EXTERNAL_STORAGE)) {
+            Toast.makeText(this, "Need permission", Toast.LENGTH_SHORT).show();
+        } else {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[] {WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("value", "granted");
+            } else {
+                Log.e("value", "denied");
+            }
+            break;
+        }
+    }
+
+
     private void findAllViews() {
         mVideoView = findViewById(R.id.videoView);
-        mDownloadButton = findViewById(R.id.downloadFile);
-        mPlayButton = findViewById(R.id.playVideo);
         mProgressBar = findViewById(R.id.progressBar);
         mChrBrand = findViewById(R.id.chrBrand);
         mChrModel = findViewById(R.id.chrModel);
@@ -113,12 +153,7 @@ public class MainActivity extends AppCompatActivity
         mMenuButton = findViewById(R.id.menu_imagebutton);
     }
 
-    View.OnClickListener viewClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showPopupMenu(v);
-        }
-    };
+    View.OnClickListener viewClickListener = v -> showPopupMenu(v);
 
     private void showPopupMenu(View v) {
         PopupMenu popupMenu = new PopupMenu(this, v);
@@ -167,30 +202,31 @@ public class MainActivity extends AppCompatActivity
         downloadTask.execute(URL_TO_DOWNLOAD_FILE, localFile.getAbsolutePath());
     }
 
-    public void playVideo(View view) {
-        Uri video = Uri.parse(localVideoFiles.get(0));
-        mVideoView.setVideoURI(video);
-        mVideoView.start();
-        mVideoView.setOnCompletionListener(mp -> {
-            if (!(currentVideo < localVideoFiles.size())) {
-                return;
-            }
-            Uri nextUri = Uri.parse(localVideoFiles.get(currentVideo++));
-            mVideoView.setVideoURI(nextUri);
+    public void playVideo() {
+        if (localVideoFiles.size() == 0) {
+            localVideoFiles = populateVideoPaths(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
+            playVideo();
+        } else {
+            Uri video = Uri.parse(localVideoFiles.get(0).getAbsolutePath());
+            mVideoView.setVideoURI(video);
             mVideoView.start();
-            if (currentVideo == localVideoFiles.size()) {
-                currentVideo = 0;
-            }
-        });
+            mVideoView.setOnCompletionListener(mp -> {
+                if (!(currentVideo < localVideoFiles.size())) {
+                    return;
+                }
+                Uri nextUri = Uri.parse(localVideoFiles.get(currentVideo++).getAbsolutePath());
+                mVideoView.setVideoURI(nextUri);
+                mVideoView.start();
+                if (currentVideo == localVideoFiles.size()) {
+                    currentVideo = 0;
+                }
+            });
+        }
     }
 
     public void populateCharacteristics() {
-//        final PriceListParcer priceListParcer = new PriceListParcer("N1019410", localFile.getAbsolutePath());
-//        LaptopCharacteristics characteristics = priceListParcer.getCharacteristicsObject();
-        new ReadCharsFromDBAsyncTask();
-        while (!characteristicsUpdated) {
-            System.out.println("waiting for characteristics...");
-        }
+        final PriceListParcer priceListParcer = new PriceListParcer(config, localFile.getAbsolutePath());
+        LaptopCharacteristics characteristics = priceListParcer.getCharacteristicsObject();
         mChrBrand.setText(characteristics.getBrand());
         mChrModel.setText(characteristics.getModel());
         mChrCPU.setText(characteristics.getCpu());
@@ -221,42 +257,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private class ReadCharsFromDBAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            repository = new CharacteristicsRepository(getApplication());
-            characteristics = repository.getAllCharacteristics().get(0);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            characteristicsUpdated = true;
-        }
-    }
-
-    private class ReadConfigFromDBASyncTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            config = repository.getAllConfigs().get(0);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            configsUpdated = true;
-        }
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        Toast.makeText(this, "Ну как хошь", Toast.LENGTH_SHORT).show();
     }
 
     private boolean isPasswordOk(String password) {
         return password.equals(SETTINGS_PASSWORD);
     }
 
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        Toast.makeText(this, "Ну как хошь", Toast.LENGTH_SHORT).show();
-    }
 }

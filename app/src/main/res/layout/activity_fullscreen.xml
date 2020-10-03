@@ -39,28 +39,6 @@
             android:layout_gravity="center"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/downloadFile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="downloadPrice"
-                android:layout_gravity="center_horizontal"
-                android:padding="10dp"
-                android:background="@color/colorAccent"
-                android:text="@string/download_price_list"/>
-
-            <Button
-                android:id="@+id/playVideo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="populateCharacteristics"
-                android:layout_marginTop="10dp"
-                android:layout_gravity="center_horizontal"
-                android:padding="10dp"
-                android:visibility="visible"
-                android:background="@color/colorAccent"
-                android:text="Populate"/>
-
         </LinearLayout>
 
         <LinearLayout

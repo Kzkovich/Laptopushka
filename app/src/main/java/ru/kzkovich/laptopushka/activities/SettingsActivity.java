@@ -1,7 +1,6 @@
 package ru.kzkovich.laptopushka.activities;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,8 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 import ru.kzkovich.laptopushka.R;
-import ru.kzkovich.laptopushka.models.CharacteristicsConfig;
-import ru.kzkovich.laptopushka.repository.CharacteristicsRepository;
 
 public class SettingsActivity extends AppCompatActivity {
     Button cancelButton;
@@ -21,7 +18,6 @@ public class SettingsActivity extends AppCompatActivity {
     TextInputLayout rateET;
     String articul;
     Double rate;
-    CharacteristicsRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +38,12 @@ public class SettingsActivity extends AppCompatActivity {
         rate = Double.parseDouble(rateET.getEditText().getText().toString());
 
         if (validatedArticulField() || validateRateField()) {
-            CharacteristicsConfig config = new CharacteristicsConfig(articul, rate);
-            AsyncTask.execute(() -> {
-                repository = new CharacteristicsRepository(getApplication());
-                repository.insert(config);
-            });
+            this.finish();
+            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+            intent.putExtra("articul", articul);
+            intent.putExtra("rate", rate);
+            startActivity(intent);
         }
-        this.finish();
-        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-        startActivity(intent);
     }
 
     private boolean validatedArticulField() {
